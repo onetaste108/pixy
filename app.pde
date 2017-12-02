@@ -14,6 +14,8 @@ class App {
 	int popSize;
 	int genSize;
 
+	NodeDisplay nd = new NodeDisplay();
+
 	float mutationRate = 50;
 
 	float appTime = 0;
@@ -394,7 +396,8 @@ class App {
 		displayGeneral();
 
 		if (view == "GRID" && isFocused) {
-			pop.display(focusedId, uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
+			nd.display(pop.arts.get(focusedId).dna, uiPos.x, uiPos.y, uiSize.x, uiSize.x);
+			// pop.display(focusedId, uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
 			pushStyle();
 			stroke(grayNormal);
 			noFill();

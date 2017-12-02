@@ -29,7 +29,7 @@ class DNA {
 		args = new ArrayList<PVector>();
 		scale = random(4,16);
 		// complexity = random(4,12);
-		complexity = random(4,16);
+		// complexity = random(4,16);
 		hueOffset = random(1);
 		genes = new ArrayList<Gene>();
 		addGene();

@@ -87,7 +87,7 @@ String[][] genesMethods = new String[][] {
 	genesIfs,
 	genesElse
 };
-float[] genesMethodsGroupRate = new float[] {1, 0.02, 0.1, 0.1, 0.1, 0.1, 0.05, 0.05};
+float[] genesMethodsGroupRate = new float[] {1, 0.02, 0.4, 0.4, 0.4, 0.4, 0.05, 0.05};
 
 float[][] genesMethodsRate = new float[][] {
 	genesBasicMathRate,

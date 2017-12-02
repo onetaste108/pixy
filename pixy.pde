@@ -14,8 +14,8 @@ PGraphics renderer;
 
 void setup() {
 	 //size(640,480,P2D);
-	//size(1280,720,P2D);
-	 fullScreen(P2D);
+	size(1280,720,P2D);
+	 // fullScreen(P2D);
 
 	logo = loadImage("data/logo.png");
 
