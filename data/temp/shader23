@@ -320,7 +320,7 @@ vec3 process(vec3 c) {
 }
 
 void main() {
-vec3 col = g_min(g_floor(g_abs(g_add(g_arg(0),g_max(g_x(),g_sub(g_y(),g_arg(2)))))),g_mix(g_div(g_fract(g_y()),g_mult(g_arg(3),g_mult(g_atan(g_mix(g_y(),g_x(),g_x()),g_cos(g_fract(g_x()))),g_y()))),g_y(),g_mix(g_y(),g_arg(4),g_sin(g_arg(5)))));
+vec3 col = g_mix(g_add(g_y(),g_arg(0)),g_mult(g_y(),g_max(g_arg(1),g_arg(2))),g_round(g_mix(g_x(),g_arg(3),g_x())));
 	col = process(col);
 	gl_FragColor = vec4(col,1.0);
 }

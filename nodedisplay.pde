@@ -17,9 +17,9 @@ class NodeDisplay {
 	void process(DNA d) {
 		canvas.beginDraw();
 		canvas.clear();
-
 		canvas.rectMode(CENTER);
 		canvas.textAlign(CENTER, CENTER);
+		canvas.translate(nxsize-xmar,0);
 
 
 		boolean ok = true;
@@ -34,13 +34,15 @@ class NodeDisplay {
 				for (int i = 0; i < layer.size(); i++) {
 					if (iter > 1) {
 						canvas.stroke(250);
+						canvas.strokeWeight(2);
 						canvas.line(
-							canvas.width/2 + ((nxsize+xmar) * layer.get(i).adress.get(layer.get(i).adress.size()-2)) - ((nxsize+xmar) * prevlayer.size())/2, (nysize+ymar) * (iter-1),
-							canvas.width/2 + ((nxsize+xmar) * i) - ((nxsize+xmar) * layer.size())/2, (nysize+ymar) * iter
+							canvas.width/2 + ((nxsize+xmar) * (layer.get(i).adress.get(layer.get(i).adress.size()-2))) - ((nxsize+xmar) * prevlayer.size())/2, (nysize+ymar) * (iter-1) + nysize/2,
+							canvas.width/2 + ((nxsize+xmar) * (i)) - ((nxsize+xmar) * layer.size())/2, (nysize+ymar) * iter - nysize/2
 							);
 					}
+					canvas.noStroke();
 
-					drawNode(layer.get(i).type, canvas.width/2 + ((nxsize+xmar) * i) - ((nxsize+xmar) * layer.size())/2, (nysize+ymar) * iter);
+					drawNode(layer.get(i).type, canvas.width/2 + ((nxsize+xmar) * (i)) - ((nxsize+xmar) * layer.size())/2, (nysize+ymar) * iter);
 				}
 			} else {
 				ok = false;

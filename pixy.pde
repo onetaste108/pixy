@@ -5,26 +5,32 @@ String[] vertexShader;
 String[] fragmentShader;
 CheckBox checkbox;
 
-PFont font;
 PImage logo;
 PImage icon;
 
 PGraphics renderer;
+ 
+void settings() {
+	size(1280,720,P2D);
+	 // fullScreen(P2D);
+	// logo = loadImage("data/icon.png");
 
+	// surface.setIcon(logo);
+	PJOGL.setIcon("data/icon.png");
+}
 
 void setup() {
 	 //size(640,480,P2D);
-	size(1280,720,P2D);
-	 // fullScreen(P2D);
+	surface.setResizable(true);
 
-	logo = loadImage("data/logo.png");
+
+	// getSurface().setCursor(0);
+
 
 	vertexShader = loadStrings("data/vertex.glsl");
 	fragmentShader = loadStrings("data/fragment.glsl");
 	renderer = createGraphics(800,800,P2D);
 
-	font = createFont("font.otf", 32);
-	textFont(font);
 
 	app = new App();
 

@@ -107,8 +107,8 @@ class App {
 
 	ArrayList<Button> selButs = new ArrayList<Button>();
 
-	PFont font = createFont("font.otf", uiblock+2);
-	PFont fontbig = createFont("font.otf", (uiblock*2.5+2)*width/1500);
+	PFont font = createFont("font.ttf", uiblock+2);
+	PFont fontbig = createFont("font.ttf", (uiblock*2.5+2)*width/1500);
 
 	App() {
 		pop = new Pop(this);
@@ -119,6 +119,7 @@ class App {
 	}
 
 	void run() {
+		updateLayout();
 		keyIsPressed();
 		mouseIsPressed();
 		displayPop();
@@ -395,18 +396,19 @@ class App {
 		displaySeparator();
 		displayGeneral();
 
-		if (view == "GRID" && isFocused) {
+		if (keyPressed && key == 'q') {
 			nd.display(pop.arts.get(focusedId).dna, uiPos.x, uiPos.y, uiSize.x, uiSize.x);
-			// pop.display(focusedId, uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
 			pushStyle();
 			stroke(grayNormal);
 			noFill();
 			rect(uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
 			popStyle();
 		} else {
+			pop.display(focusedId, uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
 			pushStyle();
-			imageMode(CENTER);
-			image(logo,uiPos.x+uiSize.x/2,uiPos.y+(uiPos.y+uiSize.y-uiblock*23)/2,uiSize.x/3,uiSize.x/3);
+			stroke(grayNormal);
+			noFill();
+			rect(uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
 			popStyle();
 		}
 	}
