@@ -20,6 +20,7 @@ class Artwork {
 	
 	DNA dna;
 
+
 	Artwork(Pop p_) {
 		p = p_;
 		id = p.arts.size()-1;
@@ -55,7 +56,7 @@ class Artwork {
 	}
 
 	void compileShader() {
-		shaderCode[shaderCode.length - 4] = dna.code;
+		shaderCode[shaderCode.length - 14] = dna.code;
 		saveStrings("data/temp/shader"+id, shaderCode);
 		shader = loadShader("data/temp/shader"+id);
 
@@ -69,6 +70,7 @@ class Artwork {
 		shader.set("u_hoff", dna.hueOffset);
 		shader.set("u_args", argsToFloat(animateArgs()));
 
+		shader.set("u_aa",app.aa);
 	}
 
 	void update(float x_, float y_, float w_, float h_) {

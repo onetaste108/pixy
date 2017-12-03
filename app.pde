@@ -17,6 +17,8 @@ class App {
 	NodeDisplay nd = new NodeDisplay();
 
 	float mutationRate = 50;
+	int aa = 1;
+
 
 	float appTime = 0;
 	float timeFreq = (float) 1/3;
@@ -497,6 +499,14 @@ class App {
 			appTime = 0;
 			timeRun = !timeRun;
 		}
+
+		if (key == '1') aa = 1;
+		if (key == '2') aa = 2;
+		if (key == '3') aa = 3;
+		if (key == '4') aa = 4;
+		if (key == '5') aa = 5;
+		if (key == '6') aa = 6;
+
 	}
 		
 	void keyReleased() {

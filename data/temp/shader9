@@ -1,9 +1,7 @@
-
 #ifdef GL_ES
 precision mediump float;
 precision mediump int;
 #endif
-
 
 #define M_PI 3.1415926535897932384626433832795
 
@@ -15,19 +13,26 @@ uniform float u_hoff;
 uniform float u_args[512];
 
 
+vec3 precol[64];
+uniform int u_aa;
+int iterX = 0;
+int iterY = 0;
+
 // VALUES
 
 vec3 g_x() {
 	float scale = (u_g_scale * u_scale);
 	float off = (u_g_off.x + u_off.x) * u_scale;
 	float temp = off + gl_FragCoord.x * scale;
+	temp = temp + (float(iterX)/float(u_aa)) * scale;
 	return vec3(temp,temp,temp);
 }
 
 vec3 g_y() {
 	float scale = u_g_scale * u_scale;
 	float off = (u_g_off.y + u_off.y) * u_scale;
-	float temp = off + gl_FragCoord.y * scale;
+	float temp = off + (gl_FragCoord.y) * scale;
+	temp = temp + (float(iterY)/float(u_aa)) * scale;
 	return vec3(temp,temp,temp);
 }
 
@@ -320,7 +325,23 @@ vec3 process(vec3 c) {
 }
 
 void main() {
-vec3 col = g_mix(g_sub(g_mix(g_add(g_x(),g_x()),g_arg(0),g_mod(g_cos(g_y()),g_y())),g_y()),g_ceil(g_hsv2rgb(g_atan(g_abs(g_mix(g_arg(1),g_arg(2),g_y())),g_x()))),g_add(g_max(g_x(),g_arg(3)),g_y()));
+	int iter = 0;
+	vec3 col;
+	for (int y_ = 0; y_ < u_aa; y_++) {
+		iterY = y_;
+		for (int x_ = 0; x_ < u_aa; x_ ++) {
+			iterX = x_;
+vec3 col = g_clamp(g_min(g_cos(g_add(g_x(),g_add(g_y(),g_y()))),g_sub(g_arg(0),g_sub(g_x(),g_mix(g_y(),g_x(),g_arg(1))))),g_cos(g_mult(g_round(g_y()),g_arg(2))),g_min(g_x(),g_div(g_sub(g_arg(3),g_y()),g_y())));
+			precol[iter] = col;
+
+			iter ++;
+		}
+	}
+	col = vec3(0.0,0.0,0.0);
+	for (int i = 0; i < u_aa*u_aa; i++) {
+		col = col + precol[i];
+	}
+	col = col / (u_aa * u_aa);
 	col = process(col);
 	gl_FragColor = vec4(col,1.0);
 }
