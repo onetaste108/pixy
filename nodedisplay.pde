@@ -33,10 +33,19 @@ class NodeDisplay {
 			if (layer.size() > 0) {
 				for (int i = 0; i < layer.size(); i++) {
 					if (iter > 1) {
+
+						ArrayList<Integer> paradr = new ArrayList<Integer>(layer.get(i).adress);
+						paradr.remove(paradr.size()-1);
+						int parent = -10;
+
+						for (int j = 0; j < prevlayer.size(); j++) {
+							if (paradr.equals(prevlayer.get(j).adress)) parent = j;
+						}
+
 						canvas.stroke(250);
 						canvas.strokeWeight(2);
 						canvas.line(
-							canvas.width/2 + ((nxsize+xmar) * (layer.get(i).adress.get(layer.get(i).adress.size()-2))) - ((nxsize+xmar) * prevlayer.size())/2, (nysize+ymar) * (iter-1) + nysize/2,
+							canvas.width/2 + (nxsize+xmar) * parent - ((nxsize+xmar) * prevlayer.size())/2, (nysize+ymar) * (iter-1) + nysize/2,
 							canvas.width/2 + ((nxsize+xmar) * (i)) - ((nxsize+xmar) * layer.size())/2, (nysize+ymar) * iter - nysize/2
 							);
 					}

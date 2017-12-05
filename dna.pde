@@ -7,8 +7,8 @@ class DNA {
 
 	String code;
 
-	float complexity = 8;
-	float mutationRate = 0.01;
+	float complexity = 6;
+	float mutationRate = 1;
 
 	DNA() {
 	}	
@@ -27,7 +27,7 @@ class DNA {
 
 	void randomDNA() {
 		args = new ArrayList<PVector>();
-		scale = random(4,16);
+		// scale = random(4,16);
 		// complexity = random(4,12);
 		// complexity = random(4,16);
 		hueOffset = random(1);
@@ -95,12 +95,10 @@ class DNA {
 			Gene g2 = genes.get((int) random(genes.size()));
 			int act = (int) random(5);
 			if (act == 0) mRemoveNode(g);
-			if (act == 1)mInsert(g);
-			if (act == 2)changeGene(g);
-			if (act == 3)mSwap(g,g2);
-			if (act == 4)mCopy(g,g2);
-			// if (isValue(g))	changeValToMeth(g);
-			// if (isValue(g))	changeValToMeth(g);
+			if (act == 1) mInsert(g);
+			if (act == 2) changeGene(g);
+			if (act == 3) mSwap(g,g2);
+			if (act == 4) mCopy(g,g2);
 
 		}
 		sortArgs();
@@ -151,7 +149,7 @@ class DNA {
 			injectBranch(ind, b1);
 			genes.get(ind).setAdress(g2.adress);
 			updAd(genes.get(ind));
-		}
+		} else println("Its okay");
 
 	}
 
@@ -195,11 +193,10 @@ class DNA {
 	void updNode(Gene g, int n) {
 		if (n > 0) {
 			fillNode(g, n);
-			updAd(g);
 		} else if (n < 0) {
 			clearNode(g, abs(n));
-			updAd(g);
 		}
+		updAd(g);
 
 	}
 
@@ -363,9 +360,9 @@ class DNA {
 
 		genes.add(getGene(isValue(a.size()+1)));
 		Gene lastGene = genes.get(genes.size()-1);
-		lastGene.adress = new ArrayList<Integer>(a);
-		lastGene.adress.add(n);
-		lastGene.depth = lastGene.adress.size();
+		ArrayList<Integer> newAdress = new ArrayList<Integer>(a);
+		newAdress.add(n);
+		lastGene.setAdress(newAdress);
 
 		for (int i = 0; i < lastGene.nodes; i++) addGene(i,lastGene.adress);
 	}

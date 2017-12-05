@@ -60,21 +60,24 @@ String[] genesMix = new String[] {
 };
 float[] genesMixRate = new float[] {1};
 
-String[] genesIfs = new String[] {
-	"ifs"
+String[] genesLogic = new String[] {
+	"if",
+	"and",
+	"or",
+	"xor"
 };
-float[] genesIfsRate = new float[] {1};
+float[] genesLogicRate = new float[] {1,1,1,1};
 
 
 String[] genesElse = new String[] {
-	"rgb2hsv",
-	"hsv2rgb",
+	"hsb2rgb",
 	"combine",
 	"setH",
 	"setS",
-	"setV"
+	"setV",
+	"noise2"
 };
-float[] genesElseRate = new float[] {1, 1, 1, 1, 1, 1};
+float[] genesElseRate = new float[] {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 1};
 
 
 String[][] genesMethods = new String[][] {
@@ -84,10 +87,10 @@ String[][] genesMethods = new String[][] {
 	genesTrig,
 	genesConstrain,
 	genesMix,
-	genesIfs,
+	genesLogic,
 	genesElse
 };
-float[] genesMethodsGroupRate = new float[] {1, 0.02, 0.4, 0.4, 0.4, 0.4, 0.05, 0.05};
+float[] genesMethodsGroupRate = new float[] {1, 0.02, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4};
 
 float[][] genesMethodsRate = new float[][] {
 	genesBasicMathRate,
@@ -96,7 +99,7 @@ float[][] genesMethodsRate = new float[][] {
 	genesTrigRate,
 	genesConstrainRate,
 	genesMixRate,
-	genesIfsRate,
+	genesLogicRate,
 	genesElseRate
 };
 
@@ -107,7 +110,7 @@ String getMethodGroupName(int n) {
 	if (n == 3) return "Trigonometry";
 	if (n == 4) return "Constrain";
 	if (n == 5) return "Mix";
-	if (n == 6) return "Ifs";
+	if (n == 6) return "Logic";
 	if (n == 7) return "Else";
 	return "Oops";
 }
@@ -115,12 +118,10 @@ String getMethodGroupName(int n) {
 class Gene {
 	DNA p;
 	String type;
-	boolean isIfsValue = false;
-	int iters;
 
 	ArrayList<Integer> adress = new ArrayList<Integer>();
 	int depth;
-	int nodes;
+	int nodes = 0;
 
 	int argsBinder;
 
@@ -163,19 +164,20 @@ class Gene {
 
 		if (type == "mix") nodes = 3;
 
-		if (type == "ifs") {
-			nodes = 1;
-			iters = 1 + (int) pow(1-sqrt(random(1)),0.5)*20;
-		}
+		if (type == "if") nodes = 4;
+		if (type == "and") nodes = 6;
+		if (type == "or") nodes = 6;
+		if (type == "xor") nodes = 6;
 
-		if (type == "hsv2rgb") nodes = 1;
-		if (type == "rgb2hsv") nodes = 1;
+		if (type == "hsb2rgb") nodes = 1;
 		if (type == "combine") nodes = 3;
 		if (type == "setH") nodes = 2;
 		if (type == "setS") nodes = 2;
 		if (type == "setV") nodes = 2;
+		if (type == "noise2") nodes = 2;
 
 		if (type == "rndm") {
+			nodes = 0;
 			if (p.args.size() >= 511) {
 				argsBinder = 511;
 			} else {
@@ -183,10 +185,10 @@ class Gene {
 				float temp = random(1);
 				p.args.add(new PVector(temp,temp,temp));
 			}
-			nodes = 0;
 		}
 
 		if (type == "rndm3") {
+			nodes = 0;
 			if (p.args.size() >= 511) {
 				argsBinder = 511;
 			} else {
@@ -194,33 +196,13 @@ class Gene {
 				float temp = random(1);
 				p.args.add(new PVector(temp+randomGaussian()*0.2,temp+randomGaussian()*0.2,temp+randomGaussian()*0.2));
 			}
-			nodes = 0;
 			
-		}
-
-		if (type == "x" || type == "y" || type == "rndm" || type == "rndm3") {
-		
-			if (random(1) < 0.1) isIfsValue = true;
 		}
 	}
 
 	String get() {
-		return get(null, 0);
-	}
-
-	String get(Gene ifs, int iter) {
 
 		String temp = "";
-
-		if (type == "ifs") {
-			ArrayList<Gene> children = getChildren();
-			return children.get(0).get(this, 1);
-		}
-
-		if (isIfsValue && ifs != null && iter <= ifs.iters) {
-			println("IFSED!");
-			return  ifs.getChildren().get(0).get(ifs, iter+1);
-		}
 
 		if (type == "rndm" || type == "rndm3") {
 			temp = "g_arg(";
@@ -236,7 +218,7 @@ class Gene {
 				for (int i = 0; i < children.size(); i++) {
 					if (i > 0) temp += ",";
 					
-					temp += children.get(i).get(ifs, iter);
+					temp += children.get(i).get();
 
 				}
 			}

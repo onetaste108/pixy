@@ -148,14 +148,14 @@ class Artwork {
 	}
 
 	void export(String path) {
-		PGraphics export = createGraphics(2000,2000,P2D);
-		update(0,0,2000,2000,2000);
+		PGraphics export = createGraphics(8000,8000,P2D);
+		update(0,0,8000,8000,8000);
 
 		setShader();
 
 		export.beginDraw();
 		export.shader(shader);
-		export.rect(0,0,2000,2000);
+		export.rect(0,0,8000,8000);
 		export.endDraw();
 		export.save(path);
 		resetShader();
