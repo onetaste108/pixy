@@ -1,12 +1,11 @@
 class NodeDisplay {
-	PGraphics canvas = createGraphics(500,500,P2D);
+	PGraphics canvas = createGraphics(600,600,P2D);
 	float xmar = 5;
 	float ymar = 20;
 	float nxsize = 50;
-	float nysize = 20;
+	float nysize = 30;
 
 	NodeDisplay() {
-
 	}
 
 	void display(DNA dna, float x_, float y_, float w_, float h_) {
@@ -16,10 +15,13 @@ class NodeDisplay {
 
 	void process(DNA d) {
 		canvas.beginDraw();
+		canvas.textFont(app.font);
+		canvas.textSize(15);
 		canvas.clear();
 		canvas.rectMode(CENTER);
 		canvas.textAlign(CENTER, CENTER);
-		canvas.translate(nxsize-xmar,0);
+
+		canvas.translate(nxsize/2+1,0);
 
 
 		boolean ok = true;
@@ -59,14 +61,12 @@ class NodeDisplay {
 			iter++;
 			prevlayer = layer;
 		}
+
 		canvas.endDraw();
 	}
 
 	void drawNode(String type, float x_, float y_) {
 		canvas.fill(#8477BC);
-		if (type == "x" || type == "y") canvas.fill(#E1480E);
-		if (type == "rndm" || type == "rndm3") canvas.fill(#E10E80);
-		if (type == "add" || type == "sub" || type == "mult" || type == "div") canvas.fill(#4CA14A);
 
 		canvas.rect(x_,y_,nxsize,nysize);
 		canvas.fill(255);

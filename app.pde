@@ -2,29 +2,34 @@ import controlP5.*;
 ControlP5 cp5time;
 ControlP5 cp5gen;
 ControlP5 cp5main;
+ControlP5 cp5back;
 
 ControlP5 selectButtons;
 
-//wtf
-
-
 class App {
 	Pop pop;
+	int aa = 1;
+	int expSize = 1000;
+
+	int lastSel = -1;
+	
 	int popRow;
 	int popSize;
 	int genSize;
 
+	boolean goSingle = false;
+
 	NodeDisplay nd = new NodeDisplay();
 
-	float mutationRate = 50;
-	int aa = 1;
+	float mutationRate = 100;
 
+	// TIME
 
 	float appTime = 0;
-	float timeFreq = (float) 1/3;
+	float timeFreq = 60;
 	boolean timeRun = false;
 
-	int appFrameRate = 60;
+	// RENDERING
 
 	boolean isRender;
 	int renderFrameCount = 0;
@@ -40,23 +45,22 @@ class App {
 
 	int lastIdPressed = -1;
 	
-	// GridView
+	// // GridView
 
 	PVector[] gridPos;
 	PVector gridScale;
 
-	// UI
+	// LAYOUT
 
 	float generalMargin = 20;
 	float gridMargin = 10;
 
 	float separatorWidth = 10;
-	float separator = height;
+	float separator = (float) height/width;
 	boolean separatorIsMoving = false;
-	float separatorLimitMin = width/4;
-	float separatorLimitMax = width-width/4;
+	float separatorLimitMin = 0.2;
+	float separatorLimitMax = 0.8;
 
-	PVector displayPos;
 	PVector displaySize;
 	PVector uiPos;
 	PVector uiSize;
@@ -68,20 +72,12 @@ class App {
 	color mainColorOver = color(187,77,255);
 	color mainColorDown = color(93,0,158);
 
-	color againColor = color(201,34,117);
-	color againColorOver = color(229,101,172);
-	color againColorDown = color(158,24,98);
-
-	color newColor = color(60,135,240);
-	color newColorOver = color(123,175,239);
-	color newColorDown = color(18,83,160);
-
-
-
 	color grayNormal = color(170);
 	color grayNormalOver = color(212);
 	color grayNormalDown = color(117);
-	color grayDarker = color(66);
+	color grayDark = color(66);
+
+	// BUTTONS UI
 
 	PVector[] timeRect;
 	Button bTimePlay;
@@ -96,46 +92,65 @@ class App {
 	Button bGenMinus;
 	Button bGenBack;
 	Button bGenFov;
+	Button bGenExp;
+	Button bGenRen;
 	Textlabel tPopSize;
 	Textlabel tGenNum;
 	PVector[] genMutRect;
-	Textlabel tMut;
-	Slider sMut;
+	Textlabel tExpSize;
+	Slider sExpSize;
 
 	PVector[] mainRect;
 	Button bMainEvolve;
 	Button bMainAgain;
 	Button bMainNew;
+	Button bBack;
 
 	ArrayList<Button> selButs = new ArrayList<Button>();
 
 	PFont font = createFont("font.ttf", uiblock+2);
-	PFont fontbig = createFont("font.ttf", (uiblock*2.5+2)*width/1500);
+	PFont fontbig = createFont("font.ttf", (uiblock*2+2));
 
 	App() {
 		pop = new Pop(this);
-		controls();
-		updateLayout();
 		setPopSize(5);
-		updateSelButs();
+		controls();
 	}
 
 	void run() {
-		updateLayout();
 		keyIsPressed();
 		mouseIsPressed();
+		updateLayout();
 		displayPop();
-		displayUI();
 		runTime();
 		if (isRender) render();
 	}
 
+
+	void runTime() {
+		if (timeRun) {
+			appTime += (float) 1 / timeFreq / 60;
+			sTimePos.setValue(appTime);
+			if (appTime >= 1) {
+				appTime = 0;
+				sTimePos.setValue(appTime);
+				if (isRender) {
+					isRender = false;
+					actionTimeStop();
+				}
+			}
+		}
+	}
+
 	void render() {
-		pop.arts.get(focusedId).render("renders/render"+renderID+"/frame"+renderFrameCount+".jpg");
+		pop.arts.get(lastSel).render("renders/render"+renderID+"/frame"+renderFrameCount+".jpg");
 		renderFrameCount++;
 	}
 
 	void beginRender() {
+		
+		renderer = createGraphics(expSize,expSize,P2D);
+
 		appTime = 0;
 		renderFrameCount = 0;
 		renderID = (int) random(99999);
@@ -143,163 +158,20 @@ class App {
 		actionTimePlay();
 	}
 
-	void runTime() {
-		if (timeRun) {
-			appTime += (float) 1/timeFreq / appFrameRate;
-			if (appTime > 1) {
-				appTime = 0;
-				if (isRender) {
-					isRender = false;
-					actionTimeStop();
 
-				}
-			}
-		}
-	}
 
-	void actionTimePlay() {
-		timeRun = true;
-		bTimePlay.setColorBackground(mainColor)
-		.setColorActive(mainColorDown) 
-		.setColorForeground(mainColorOver)
-		.getCaptionLabel()
-			.setColor(grayNormalOver);
-
-	}
-
-	void actionTimePause() {
-		timeRun = false;
-		bTimePlay.setColorBackground(grayNormal)
-		.setColorActive(grayNormalDown) 
-		.setColorForeground(grayNormalOver)
-		.getCaptionLabel()
-			.setColor(grayDarker);
-	}
-
-	void actionTimeStop() {
-		timeRun = false;
-		appTime = 0;
-		bTimePlay.setColorBackground(grayNormal)
-		.setColorActive(grayNormalDown) 
-		.setColorForeground(grayNormalOver)
-		.getCaptionLabel()
-			.setColor(grayDarker);
-	}
-
-	void actionGenPlus() {
-		increasePop();
-	}
-
-	void actionGenMinus() {
-		decreasePop();
-	}
-
-	void actionMainEvolve() {
-		if (isAnySelected()) {
-			pop.evolve();
-		}
-	}
-
-	void actionMainAgain() {
-		pop.evolveAgain();
-	}
-
-	boolean isAnySelected() {
-		for (Artwork a : pop.arts) {
-			if (a.isSelected) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	// Population control
 
 	void setPopSize(int n) {
 		popRow = n;
 		popSize = n*n;
 		pop.setPopSize(n);
-		countGrid();
-		if (selButs.size() < popSize) {
-			for (int i = selButs.size(); i < popSize; i++) {
-				selButs.add(addBut(i));
-			}
-		} else if (selButs.size() > popSize) {
-			for (int i = 0; i < selButs.size() - popSize; i++) {
-				selButs.remove(selButs.size()-1);
-			}
-		}
 	}
 
-	Button addBut(int n) {
-		Button temp = selectButtons.addButton("baton"+n);
-		temp.setSize(uiblock*2,uiblock*2);
-
-		temp.plugTo(this)
-		.setId(n)
-		.setLabelVisible(false)
-		.setColorBackground(grayNormal)
-		.setColorActive(grayNormalDown) 
-		.setColorForeground(grayNormalOver);
-		return temp;
+	void randomPop() {
+		pop.randomPop();
 	}
 
-	void selButAction(int n) {
-		if (!pop.arts.get(n).isSelected) {
-			selButs.get(n).setColorBackground(mainColor)
-			.setColorActive(mainColorDown) 
-			.setColorForeground(mainColorOver);
-			pop.arts.get(n).isSelected = true;
-		} else {
-			selButs.get(n).setColorBackground(grayNormal)
-			.setColorActive(grayNormalDown) 
-			.setColorForeground(grayNormalOver);
-			pop.arts.get(n).isSelected = false;
-		}
-
-		if (isAnySelected()) {
-			bMainEvolve
-				.setColorBackground(mainColor)
-				.setColorActive(mainColorOver) 
-				.setColorForeground(mainColorDown)
-					.getCaptionLabel()
-					.setColor(color(255));
-		} else {
-			bMainEvolve
-				.setColorBackground(grayDarker)
-				.setColorActive(grayDarker) 
-				.setColorForeground(grayDarker)
-					.getCaptionLabel()
-					.setColor(grayNormalDown);
-		}
-	}
-
-	void increasePop() {
-		popRow++;
-		setPopSize(popRow);
-
-		bGenMinus
-		.setColorBackground(grayNormal)
-		.setColorActive(grayNormalDown) 
-		.setColorForeground(grayNormalOver);
-
-	}
-
-	void decreasePop() {
-		if (popRow > 1) {
-			popRow--;
-			setPopSize(popRow);		
-		} 
-		if (popRow <= 1){
-			bGenMinus
-			.setColorBackground(grayDarker)
-			.setColorActive(grayDarker)
-			.setColorForeground(grayDarker);
-
-		}
-	}
-
-	// Population Display
+	// DISPLAY POP
 
 	void displayPop() {
 		if (view == "SINGLE") displaySingleView();
@@ -338,32 +210,30 @@ class App {
 		popStyle();
 	}
 
-	void displayButtons() {
-		for (int i = 0; i < popSize; i++) {
-			if (isFocused && focusedId == i && view == "GRID") {
-				selButs.get(i).show();
-			} else {
-				selButs.get(i).hide();	
-			}
-		}
-	}
-
-	// // Population Display Layout
+	// UPDATE LAYOUT
 
 	void updateLayout() {
-		displayPos = new PVector();
-		displaySize = new PVector(separator, height);
-		uiPos = new PVector(separator + separatorWidth + generalMargin, generalMargin);
+
+		if (goSingle) {
+			view = "GRID";
+			goSingle = false;
+		}
+
+
+		cp5time.setGraphics(sketchRef,0,0);
+		cp5gen.setGraphics(sketchRef,0,0);
+		cp5main.setGraphics(sketchRef,0,0);
+		cp5back.setGraphics(sketchRef,0,0);
+
+		selectButtons.setGraphics(sketchRef,0,0);
+
+
+		displaySize = new PVector(separator*width, height);
+		uiPos = new PVector(separator*width + separatorWidth + generalMargin, generalMargin);
 		uiSize = new PVector(width-uiPos.x-generalMargin, height-generalMargin*2);
 		countGrid();
 		updateControls();
-	}
-
-	void separatorMove() {
-		separator = mouseX-separatorWidth/2;
-		if (separator < separatorLimitMin) separator = separatorLimitMin;
-		if (separator > separatorLimitMax) separator = separatorLimitMax;
-		updateLayout();
+		displayUI();
 	}
 
 	void countGrid() {
@@ -380,6 +250,242 @@ class App {
 		}
 	}
 
+	void updateControls() {
+		updateTimeBlock();
+		updateGenBlock();
+		updateMainBlock();
+		updateSelButs();
+	}
+
+	void displayUI() {
+		displaySeparator();
+		displayGeneral();
+
+		if (view == "SINGLE") {
+			cp5back.show();
+		} else {
+			cp5back.hide();
+		}
+
+		if (view == "SINGLE") {
+			nd.display(pop.arts.get(focusedId).dna, uiPos.x, uiPos.y, uiSize.x, uiSize.x);
+			pushStyle();
+			stroke(grayNormal);
+			noFill();
+			rect(uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
+			popStyle();
+		} else if (isFocused) {
+			pop.display(focusedId, uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
+			pushStyle();
+			stroke(grayNormal);
+			noFill();
+			rect(uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
+			popStyle();
+		} else if (lastSel != -1) {
+			pop.display(lastSel, uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
+			pushStyle();
+			stroke(grayNormal);
+			noFill();
+			rect(uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
+			popStyle();
+		} else {
+			pushStyle();
+			fill(240);
+			textFont(font);
+			text(textGreet,uiPos.x, uiPos.y, uiSize.x, uiSize.x);
+			popStyle();
+		}
+	}
+
+	void displaySeparator() {
+		pushStyle();
+		if (mouseOver(separator,0,separatorWidth,height)) fill(55);
+		else fill(44);
+		noStroke();
+		rect(separator*width,0,separatorWidth,height);
+		popStyle();
+	}
+
+	void displayGeneral() {
+		displayTime();
+		displayGeneBlock();
+		displayMainBlock();
+		displayButtons();
+	}
+
+	void displayTime() {
+		pushStyle();
+		noFill();
+		stroke(grayNormal);
+		rect(timeRect[0].x,timeRect[0].y,timeRect[1].x,timeRect[1].y);
+		popStyle();
+
+		sTimePos.setValue(appTime);
+		tTime.setText("time "+(float) round(timeFreq*10)/10+"s");
+	}
+
+	void displayMainBlock() {
+		pushStyle();
+		noFill();
+		stroke(grayNormal);
+		rect(mainRect[0].x,mainRect[0].y,mainRect[1].x,mainRect[1].y);
+		popStyle();
+	}
+
+	void displayGeneBlock() {
+		pushStyle();
+		noFill();
+		stroke(grayNormal);
+		rect(genRect[0].x,genRect[0].y,genRect[1].x,genRect[1].y);
+		popStyle();
+
+		tPopSize.setText("POP: "+popSize);
+		tGenNum.setText("AA: "+aa);
+		tExpSize.setText("SIZE: "+expSize+"px");
+	}
+
+	void displayButtons() {
+
+		if (selButs.size() < popSize) {
+			for (int i = selButs.size(); i < popSize; i++) {
+				selButs.add(addBut(i));
+			}
+		} else if (selButs.size() > popSize) {
+			for (int i = 0; i < selButs.size() - popSize; i++) {
+				selButs.remove(selButs.size()-1);
+			}
+		}
+
+
+
+		for (int i = 0; i < popSize; i++) {
+			if (isFocused && focusedId == i && view == "GRID") {
+				selButs.get(i).show();
+			} else {
+				selButs.get(i).hide();	
+			}
+		}
+	}
+
+
+
+
+
+
+
+
+	boolean isAnySelected() {
+		for (int i = 0; i < pop.arts.size(); i++) {
+			Artwork a = pop.arts.get(i);
+			if (a.isSelected) {
+				lastSel = i;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Population control
+
+
+	Button addBut(int n) {
+		Button temp = selectButtons.addButton("baton"+n);
+		temp.setSize(uiblock*2,uiblock*2);
+
+		temp.plugTo(this)
+		.setId(n)
+		.setLabelVisible(false)
+		.setColorBackground(grayNormal)
+		.setColorActive(grayNormalDown) 
+		.setColorForeground(grayNormalOver);
+		return temp;
+	}
+
+	void selButAction(int n) {
+		if (!pop.arts.get(n).isSelected) {
+			selButs.get(n).setColorBackground(mainColor)
+			.setColorActive(mainColorDown) 
+			.setColorForeground(mainColorOver);
+			pop.arts.get(n).isSelected = true;
+
+			lastSel = n;
+
+		} else {
+			selButs.get(n).setColorBackground(grayNormal)
+			.setColorActive(grayNormalDown) 
+			.setColorForeground(grayNormalOver);
+			pop.arts.get(n).isSelected = false;
+
+			lastSel = -1;
+		}
+
+		if (view == "SINGLE") {
+			lastSel = focusedId;
+		}
+
+		if (isAnySelected()) {
+			bMainEvolve
+				.setColorBackground(mainColor)
+				.setColorActive(mainColorOver) 
+				.setColorForeground(mainColorDown)
+					.getCaptionLabel()
+					.setColor(color(255));
+		} else {
+			bMainEvolve
+				.setColorBackground(grayDark)
+				.setColorActive(grayDark) 
+				.setColorForeground(grayDark)
+					.getCaptionLabel()
+					.setColor(grayNormalDown);
+		}
+	}
+
+
+
+	void increasePop() {
+		popRow++;
+		setPopSize(popRow);
+
+		bGenMinus
+		.setColorBackground(grayNormal)
+		.setColorActive(grayNormalDown) 
+		.setColorForeground(grayNormalOver);
+
+	}
+
+	void decreasePop() {
+		if (popRow > 1) {
+			popRow--;
+			setPopSize(popRow);		
+		} 
+		if (popRow <= 1){
+			bGenMinus
+			.setColorBackground(grayDark)
+			.setColorActive(grayDark)
+			.setColorForeground(grayDark);
+
+		}
+	}
+
+	// Population Display
+
+
+
+
+
+
+
+	// // Population Display Layout
+
+
+	void separatorMove() {
+		separator = (mouseX-separatorWidth/2)/width;
+		if (separator < separatorLimitMin) separator = separatorLimitMin;
+		if (separator > separatorLimitMax) separator = separatorLimitMax;
+	}
+
+
+
 	// Population Grid UI
 
 	void checkArtsFocus() {
@@ -394,43 +500,18 @@ class App {
 
 	// UI display
 
-	void displayUI() {
-		displaySeparator();
-		displayGeneral();
 
-		if (keyPressed && key == 'q') {
-			nd.display(pop.arts.get(focusedId).dna, uiPos.x, uiPos.y, uiSize.x, uiSize.x);
-			pushStyle();
-			stroke(grayNormal);
-			noFill();
-			rect(uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
-			popStyle();
-		} else {
-			pop.display(focusedId, uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
-			pushStyle();
-			stroke(grayNormal);
-			noFill();
-			rect(uiPos.x, uiPos.y, uiSize.x, uiPos.y+uiSize.y-uiblock*23);
-			popStyle();
-		}
-	}
 
-	void displaySeparator() {
-		pushStyle();
-		if (mouseOver(separator,0,separatorWidth,height)) fill(55);
-		else fill(44);
-		noStroke();
-		rect(separator,0,separatorWidth,height);
-		popStyle();
-	}
+
 
 
 	// Global UI Events
 
 	void mousePressed() {
-		if (mouseOver(separator,0, separatorWidth, height)) separatorIsMoving = true;
+		if (mouseOver(separator*width,0, separatorWidth, height)) separatorIsMoving = true;
 		if (isFocused && !selButs.get(focusedId).isMouseOver()) {
 			lastIdPressed = focusedId;
+			lastSel = focusedId;
 		}
 	}
 
@@ -449,7 +530,7 @@ class App {
 	}
 
 	void mouseReleased() {
-		if (lastIdPressed == focusedId) {
+		if (lastIdPressed == focusedId && view != "SINGLE") {
 			view = "SINGLE";
 		}
 		lastIdPressed = -1;
@@ -477,8 +558,7 @@ class App {
 		}
 
 		if (key == 'r') {
-			if (isRender) isRender = false;
-			else beginRender();
+
 		}
 
 		if (key == 'm') {
@@ -517,19 +597,19 @@ class App {
 		if (keyPressed) {
 
 		if (key == CODED && keyCode == UP) {
-			pop.arts.get(focusedId).addOffset(0,0.02);
+			pop.arts.get(focusedId).addOffset(0,0.05);
 		}
 		
 		if (key == CODED && keyCode == DOWN) {
-			pop.arts.get(focusedId).addOffset(0,-0.02);
+			pop.arts.get(focusedId).addOffset(0,-0.05);
 		}
 		
 		if (key == CODED && keyCode == LEFT) {
-			pop.arts.get(focusedId).addOffset(-0.02,0);
+			pop.arts.get(focusedId).addOffset(-0.05,0);
 		}
 		
 		if (key == CODED && keyCode == RIGHT) {
-			pop.arts.get(focusedId).addOffset(0.03,0);
+			pop.arts.get(focusedId).addOffset(0.05,0);
 		}
 
 		if (keyPressed && key == 'z') {
@@ -543,51 +623,14 @@ class App {
 		}
 	}
 
-	void updateControls() {
-		updateTimeBlock();
-		updateGenBlock();
-		updateMainBlock();
-		updateSelButs();
-	}
 
-	void displayGeneral() {
-		displayTime();
-		displayGeneBlock();
-		displayMainBlock();
-		displayButtons();
-	}
 
-	void displayTime() {
-		pushStyle();
-		noFill();
-		stroke(grayNormal);
-		rect(timeRect[0].x,timeRect[0].y,timeRect[1].x,timeRect[1].y);
-		popStyle();
 
-		sTimePos.setValue(appTime);
-		tTime.setText("time "+(float) round(timeFreq*10)/10+"s");
-	}
 
-	void displayGeneBlock() {
-		pushStyle();
-		noFill();
-		stroke(grayNormal);
-		rect(genRect[0].x,genRect[0].y,genRect[1].x,genRect[1].y);
-		rect(genMutRect[0].x,genMutRect[0].y,genMutRect[1].x,genMutRect[1].y);
-		popStyle();
 
-		tPopSize.setText("POP: "+popSize);
-		tGenNum.setText("GEN: "+genSize);
-		tMut.setText("MUT. RATE: "+round(mutationRate)+"%");
-	}
 
-	void displayMainBlock() {
-		pushStyle();
-		noFill();
-		stroke(grayNormal);
-		rect(mainRect[0].x,mainRect[0].y,mainRect[1].x,mainRect[1].y);
-		popStyle();
-	}
+
+
 
 	void updateTimeBlock() {
 		timeRect = new PVector[] {
@@ -614,11 +657,7 @@ class App {
 	void updateGenBlock() {
 		genRect = new PVector[] {
 			new PVector((int) uiPos.x, (int) uiPos.y+uiSize.y-uiblock*13),
-			new PVector((int) uiblock*17, (int) uiblock*6)
-		};
-		genMutRect = new PVector[] {
-			new PVector((int) uiPos.x + uiblock*18, (int) uiPos.y+uiSize.y-uiblock*13),
-			new PVector((int) uiSize.x - uiblock*18, (int) uiblock*6)
+			new PVector((int) uiSize.x, (int) uiblock*6)
 		};
 
 		bGenMinus.setPosition((int) uiPos.x + uiblock, (int) uiPos.y+uiSize.y-uiblock*13+uiblock*3)
@@ -629,13 +668,17 @@ class App {
 			.setSize(uiblock*3,uiblock*2);
 		bGenFov.setPosition((int) uiPos.x + uiblock*13, (int) uiPos.y+uiSize.y-uiblock*13+uiblock*3)
 			.setSize(uiblock*3,uiblock*2);
+		bGenExp.setPosition((int) uiPos.x + uiblock*17, (int) uiPos.y+uiSize.y-uiblock*13+uiblock*3)
+			.setSize((int) abs(uiSize.x-(uiblock*18))/2-uiblock/2,uiblock*2);
+		bGenRen.setPosition((int) uiPos.x + uiblock*17 + abs(uiSize.x-(uiblock*18))/2+uiblock/2, (int) uiPos.y+uiSize.y-uiblock*13+uiblock*3)
+			.setSize((int) abs(uiSize.x-( uiblock*18))/2-uiblock/2,uiblock*2);
 
-		sMut.setPosition((int) uiPos.x + uiblock*19, (int) uiPos.y+uiSize.y-uiblock*13+uiblock*3)
-			.setSize((int) uiSize.x - uiblock*20, (int) uiblock*2);
+		sExpSize.setPosition((int) uiPos.x + uiblock*27, (int) uiPos.y+uiSize.y-uiblock*13+uiblock*1)
+			.setSize((int) uiSize.x - uiblock*28, (int) uiblock*1);
 
 		tPopSize.setPosition((int) uiPos.x + uiblock -3, (int) uiPos.y+uiSize.y-uiblock*13+uiblock-4);
 		tGenNum.setPosition((int) uiPos.x + uiblock*9 -3, (int) uiPos.y+uiSize.y-uiblock*13+uiblock-4);
-		tMut.setPosition((int) uiPos.x + uiblock*19 -3, (int) uiPos.y+uiSize.y-uiblock*13+uiblock-4);
+		tExpSize.setPosition((int) uiPos.x + uiblock*17 -3, (int) uiPos.y+uiSize.y-uiblock*13+uiblock-4);
 	}
 
 	void updateMainBlock() {
@@ -652,13 +695,51 @@ class App {
 			.setSize(mid, uiblock*4);
 		bMainNew.setPosition(int(uiPos.x + uiSize.x - mid - uiblock), (int) uiPos.y+uiSize.y-uiblock*19)
 			.setSize(mid, uiblock*4);
+
+		bBack.setPosition(int(uiPos.x), (int) uiPos.y+uiSize.y-uiblock*25)
+			.setSize((int) uiSize.x, uiblock*4);
+
+
+		if (pop.lastPool.size() > 0) {
+			bMainAgain
+				.setColorBackground(grayNormal)
+				.setColorActive(grayNormalDown) 
+				.setColorForeground(grayNormalOver)
+				.getCaptionLabel()
+				.setColor(color(255))
+				.setFont(fontbig);	
+		} else {
+			bMainAgain
+				.setColorBackground(grayDark)
+				.setColorActive(grayDark) 
+				.setColorForeground(grayDark)
+					.getCaptionLabel()
+					.setColor(grayNormalDown);
+		}
+		
 	}
 
 	void updateSelButs() {
-		for (int i = 0; i < popSize; i++) {
-			selButs.get(i).setPosition((int) gridPos[i].x + uiblock, (int) gridPos[i].y + gridScale.y - uiblock*3);
+		for (int i = 0; i < selButs.size(); i++) {
+			if (i < popSize) {
+				selButs.get(i).setPosition((int) gridPos[i].x + uiblock, (int) gridPos[i].y + gridScale.y - uiblock*3);
+			}
 		}
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	void controls() {
 
@@ -672,8 +753,9 @@ class App {
 		.setColorActive(grayNormalDown) 
 		.setColorForeground(grayNormalOver)
 			.getCaptionLabel()
-			.setColor(grayDarker)
+			.setColor(grayDark)
 			.setFont(font);
+
 		bTimePause = cp5time.addButton("actionTimePause");
 		bTimePause.plugTo(this)
 		.setColorBackground(grayNormal)
@@ -681,9 +763,10 @@ class App {
 		.setColorForeground(grayNormalOver)
 		.setLabel("||")
 			.getCaptionLabel()
-			.setColor(grayDarker)
+			.setColor(grayDark)
 			.setFont(font);
 		bTimePause.setLabelVisible(true);
+
 		bTimeStop = cp5time.addButton("actionTimeStop");
 		bTimeStop.plugTo(this)
 		.setColorBackground(grayNormal)
@@ -691,7 +774,7 @@ class App {
 		.setColorForeground(grayNormalOver)
 		.setLabel("x")
 			.getCaptionLabel()
-			.setColor(grayDarker)
+			.setColor(grayDark)
 			.setFont(font);
 		bTimeStop.setLabelVisible(true);
 
@@ -701,7 +784,7 @@ class App {
 		.setValue(5)
 		.setLabelVisible(false)
 		.setColorActive(grayNormalOver)
-		.setColorBackground(grayDarker)
+		.setColorBackground(grayDark)
 		.setColorForeground(grayNormal);
 		sTimePos = cp5time.addSlider("appTime")
 		.plugTo(this)
@@ -709,7 +792,7 @@ class App {
 		.setRange(0,1)
 		.setValue(0)
 		.setColorActive(grayNormal)
-		.setColorBackground(grayDarker)
+		.setColorBackground(grayDark)
 		.setColorForeground(grayNormalDown);
 
 		tTime = cp5time.addTextlabel("timelabel").setFont(font).setColor(grayNormal);
@@ -720,6 +803,7 @@ class App {
 		selectButtons = new ControlP5(sketchRef);
 
 		cp5gen = new ControlP5(sketchRef);
+		cp5back = new ControlP5(sketchRef);
 
 		bGenPlus = cp5time.addButton("actionGenPlus");
 		bGenPlus.setLabelVisible(true)
@@ -729,7 +813,7 @@ class App {
 		.setColorActive(grayNormalDown) 
 		.setColorForeground(grayNormalOver)
 			.getCaptionLabel()
-			.setColor(grayDarker)
+			.setColor(grayDark)
 			.setFont(font);
 		bGenMinus = cp5time.addButton("actionGenMinus");
 		bGenMinus.setLabelVisible(true)
@@ -739,41 +823,61 @@ class App {
 		.setColorActive(grayNormalDown) 
 		.setColorForeground(grayNormalOver)
 			.getCaptionLabel()
-			.setColor(grayDarker)
+			.setColor(grayDark)
 			.setFont(font);
-		bGenBack = cp5time.addButton("actionGenBack");
+		bGenBack = cp5time.addButton("actionAAm");
 		bGenBack.setLabelVisible(true)
-		.setLabel("<<")
+		.setLabel("-")
 		.plugTo(this)
 		.setColorBackground(grayNormal)
 		.setColorActive(grayNormalDown) 
 		.setColorForeground(grayNormalOver)
 			.getCaptionLabel()
-			.setColor(grayDarker)
+			.setColor(grayDark)
 			.setFont(font);		
-		bGenFov = cp5time.addButton("actionGenFov");
+		bGenFov = cp5time.addButton("actionAAp");
 		bGenFov.setLabelVisible(true)
-		.setLabel("<<")
+		.setLabel("+")
 		.plugTo(this)
 		.setColorBackground(grayNormal)
 		.setColorActive(grayNormalDown) 
 		.setColorForeground(grayNormalOver)
 			.getCaptionLabel()
-			.setColor(grayDarker)
+			.setColor(grayDark)
+			.setFont(font);
+		bGenExp = cp5time.addButton("actionExp");
+		bGenExp.setLabelVisible(true)
+		.setLabel("EXPORT")
+		.plugTo(this)
+		.setColorBackground(grayNormal)
+		.setColorActive(grayNormalDown) 
+		.setColorForeground(grayNormalOver)
+			.getCaptionLabel()
+			.setColor(grayDark)
+			.setFont(font);		
+		bGenRen = cp5time.addButton("actionRen");
+		bGenRen.setLabelVisible(true)
+		.setLabel("RENDER")
+		.plugTo(this)
+		.setColorBackground(grayNormal)
+		.setColorActive(grayNormalDown) 
+		.setColorForeground(grayNormalOver)
+			.getCaptionLabel()
+			.setColor(grayDark)
 			.setFont(font);
 
-		sMut = cp5time.addSlider("mutationRate")
+		sExpSize = cp5time.addSlider("expSize")
 		.plugTo(this)
-		.setRange(0,100)
-		.setValue(50)
+		.setRange(500,4000)
+		.setValue(expSize)
 		.setLabelVisible(false)
 		.setColorActive(grayNormalOver)
-		.setColorBackground(grayDarker)
+		.setColorBackground(grayDark)
 		.setColorForeground(grayNormal);
 
 		tGenNum = cp5time.addTextlabel("genenum").setFont(font).setColor(grayNormal);
 		tPopSize = cp5time.addTextlabel("genepopsize").setFont(font).setColor(grayNormal);
-		tMut = cp5time.addTextlabel("genemutrate").setFont(font).setColor(grayNormal);
+		tExpSize = cp5time.addTextlabel("genemutrate").setFont(font).setColor(grayNormal);
 
 
 
@@ -781,36 +885,138 @@ class App {
 
 		bMainEvolve = cp5time.addButton("actionMainEvolve");
 		bMainEvolve.setLabelVisible(true)
-		.setLabel("evolve!")
+		.setLabel("develop")
 		.plugTo(this)
-		.setColorBackground(grayDarker)
-		.setColorActive(grayDarker) 
-		.setColorForeground(grayDarker)
+		.setColorBackground(grayDark)
+		.setColorActive(grayDark) 
+		.setColorForeground(grayDark)
 			.getCaptionLabel()
 			.setColor(grayNormalDown)
 			.setFont(fontbig);
 		bMainAgain = cp5time.addButton("actionMainAgain");
 		bMainAgain.setLabelVisible(true)
-		.setLabel("again")
+		.setLabel("repeat")
 		.plugTo(this)
-		.setColorBackground(againColor)
-		.setColorActive(againColorOver) 
-		.setColorForeground(againColorDown)
+		.setColorBackground(grayDark)
+		.setColorActive(grayDark) 
+		.setColorForeground(grayDark)
 			.getCaptionLabel()
-			.setColor(color(255))
+			.setColor(grayNormalDown)
 			.setFont(fontbig);
 		bMainNew = cp5time.addButton("actionMainNew");
 		bMainNew.setLabelVisible(true)
 		.setLabel("new")
 		.plugTo(this)
-		.setColorBackground(newColor)
-		.setColorActive(newColorDown) 
-		.setColorForeground(newColorOver)
+		.setColorBackground(grayNormal)
+		.setColorActive(grayNormalDown) 
+		.setColorForeground(grayNormalOver)
+			.getCaptionLabel()
+			.setColor(color(255))
+			.setFont(fontbig);		
+
+
+
+		bBack = cp5back.addButton("actionBack");
+		bBack.setLabelVisible(true)
+		.setLabel("back")
+		.plugTo(this)
+		.setColorBackground(grayNormal)
+		.setColorActive(grayNormalDown) 
+		.setColorForeground(grayNormalOver)
 			.getCaptionLabel()
 			.setColor(color(255))
 			.setFont(fontbig);		
 
 	}
+
+
+
+	/////////// ACTIONS
+
+	void actionBack() {
+		goSingle = true;
+	}
+
+	void actionTimePlay() {
+		timeRun = true;
+		bTimePlay.setColorBackground(mainColor)
+		.setColorActive(mainColorDown) 
+		.setColorForeground(mainColorOver)
+		.getCaptionLabel()
+			.setColor(grayNormalOver);
+
+	}
+
+	void actionTimePause() {
+		timeRun = false;
+		bTimePlay.setColorBackground(grayNormal)
+		.setColorActive(grayNormalDown) 
+		.setColorForeground(grayNormalOver)
+		.getCaptionLabel()
+			.setColor(grayDark);
+	}
+
+	void actionTimeStop() {
+		timeRun = false;
+		appTime = 0;
+		bTimePlay.setColorBackground(grayNormal)
+		.setColorActive(grayNormalDown) 
+		.setColorForeground(grayNormalOver)
+		.getCaptionLabel()
+			.setColor(grayDark);
+	}
+
+	void actionGenPlus() {
+		increasePop();
+	}
+
+	void actionGenMinus() {
+		decreasePop();
+	}
+
+	void actionAAm() {
+		if (aa > 1) aa--;
+	}	
+
+	void actionAAp() {
+		if (aa < 16) aa++;
+	}
+
+	void actionExp() {
+		if (lastSel >= 0) {
+			pop.arts.get(lastSel).export();
+		}
+	}
+
+	void actionRen() {
+			if (isRender || lastSel == -1) isRender = false;
+			else beginRender();
+	}
+
+	void actionMainNew() {
+		randomPop();
+
+		bMainEvolve
+			.setColorBackground(grayDark)
+			.setColorActive(grayDark) 
+			.setColorForeground(grayDark)
+				.getCaptionLabel()
+				.setColor(grayNormalDown);
+
+
+
+	}
+
+	void actionMainEvolve() {
+		if (isAnySelected()) {
+			pop.evolve();
+		}
+	}
+
+	void actionMainAgain() {
+		pop.evolveAgain();
+	}
+
 
 
 }

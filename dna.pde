@@ -28,7 +28,7 @@ class DNA {
 	void randomDNA() {
 		args = new ArrayList<PVector>();
 		// scale = random(4,16);
-		// complexity = random(4,12);
+		complexity = random(3,8);
 		// complexity = random(4,16);
 		hueOffset = random(1);
 		genes = new ArrayList<Gene>();
@@ -90,7 +90,7 @@ class DNA {
 	void mutate() {
 		mutateArgs();
 		mutateParameters();
-		for (int i = 0; i < genes.size()*(app.mutationRate/100*0.03); i++) {
+		for (int i = 0; i < genes.size()*(app.mutationRate/100*0.05); i++) {
 			Gene g = genes.get((int) random(genes.size()));
 			Gene g2 = genes.get((int) random(genes.size()));
 			int act = (int) random(5);

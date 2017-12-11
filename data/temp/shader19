@@ -474,7 +474,7 @@ void main() {
 		iterY = y_;
 		for (int x_ = 0; x_ < u_aa; x_ ++) {
 			iterX = x_;
-vec3 col = g_add(g_xor(g_sub(g_arg(0),g_y()),g_mix(g_min(g_setH(g_x(),g_x()),g_arg(1)),g_x(),g_arg(2)),g_xor(g_arg(3),g_sub(g_y(),g_sin(g_x())),g_combine(g_y(),g_arg(4),g_arg(5)),g_arg(6),g_y(),g_floor(g_x())),g_y(),g_arg(7),g_setV(g_sub(g_y(),g_x()),g_add(g_y(),g_x()))),g_sub(g_combine(g_x(),g_sin(g_setS(g_x(),g_setV(g_x(),g_arg(8)))),g_x()),g_arg(9)));
+vec3 col = g_pow2(g_div(g_tan(g_y()),g_arg(0)));
 			precol[iter] = col;
 
 			iter ++;

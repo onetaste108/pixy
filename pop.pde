@@ -76,7 +76,9 @@ class Pop {
 	void randomPop() {
 		for (Artwork a : arts) {
 			a.randomDNA();
-		}		
+			a.isSelected = false;
+		}	
+		lastPool = new ArrayList<DNA>();	
 	}
 
 	void display(int num, float x, float y, float w, float h) {

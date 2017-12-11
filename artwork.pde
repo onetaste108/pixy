@@ -92,12 +92,10 @@ class Artwork {
 
 	ArrayList<PVector> animateArgs() {
 		animatedArgs = new ArrayList<PVector>();
-		float offset = 0;
 		for (PVector a : dna.args) {
-			float addTime = sin((app.appTime + offset) * 2 * PI);
+			float addTime = sin((app.appTime) * 2 * PI);
 			PVector addTimeV = new PVector(addTime,addTime,addTime);
 			animatedArgs.add(PVector.add(a,addTimeV));
-			offset+=0.1;
 		}
 		return animatedArgs;
 	}
@@ -134,28 +132,27 @@ class Artwork {
 	// EXPORTING
 
 	void render(String path) {
-		update(0,0,800,800,800);
+		update(0,0,app.expSize,app.expSize,app.expSize);
 
 		setShader();
 
 		renderer.beginDraw();
 		renderer.shader(shader);
-		renderer.rect(0,0,800,800);
+		renderer.rect(0,0,app.expSize,app.expSize);
 		renderer.endDraw();
 		renderer.save(path);
 		resetShader();
-		println("rend");
 	}
 
 	void export(String path) {
-		PGraphics export = createGraphics(8000,8000,P2D);
-		update(0,0,8000,8000,8000);
+		PGraphics export = createGraphics(app.expSize,app.expSize,P2D);
+		update(0,0,app.expSize,app.expSize,app.expSize);
 
 		setShader();
 
 		export.beginDraw();
 		export.shader(shader);
-		export.rect(0,0,8000,8000);
+		export.rect(0,0,app.expSize,app.expSize);
 		export.endDraw();
 		export.save(path);
 		resetShader();

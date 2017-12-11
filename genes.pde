@@ -77,7 +77,7 @@ String[] genesElse = new String[] {
 	"setV",
 	"noise2"
 };
-float[] genesElseRate = new float[] {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 1};
+float[] genesElseRate = new float[] {0, 0, 0, 0, 0, 1, 1};
 
 
 String[][] genesMethods = new String[][] {
@@ -90,7 +90,7 @@ String[][] genesMethods = new String[][] {
 	genesLogic,
 	genesElse
 };
-float[] genesMethodsGroupRate = new float[] {1, 0.02, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4};
+float[] genesMethodsGroupRate = new float[] {1, 0.02, 0.35, 0.35, 0.35, 0.35, 0.35, 0.35};
 
 float[][] genesMethodsRate = new float[][] {
 	genesBasicMathRate,
