@@ -1,5 +1,5 @@
 String[] genesValues = new String[] {
-	"x", 
+	"x",
 	"y",
 	"rndm",
 	"rndm3"
@@ -77,7 +77,7 @@ String[] genesElse = new String[] {
 	"setV",
 	"noise2"
 };
-float[] genesElseRate = new float[] {0, 0, 0, 0, 0, 1, 1};
+float[] genesElseRate = new float[] {1, 1, 1, 1, 1, 1, 1};
 
 
 String[][] genesMethods = new String[][] {
@@ -90,7 +90,7 @@ String[][] genesMethods = new String[][] {
 	genesLogic,
 	genesElse
 };
-float[] genesMethodsGroupRate = new float[] {1, 0.02, 0.35, 0.35, 0.35, 0.35, 0.35, 0.35};
+float[] genesMethodsGroupRate = new float[] {1, 0.01, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05};
 
 float[][] genesMethodsRate = new float[][] {
 	genesBasicMathRate,
@@ -196,7 +196,7 @@ class Gene {
 				float temp = random(1);
 				p.args.add(new PVector(temp+randomGaussian()*0.2,temp+randomGaussian()*0.2,temp+randomGaussian()*0.2));
 			}
-			
+
 		}
 	}
 
@@ -207,7 +207,7 @@ class Gene {
 		if (type == "rndm" || type == "rndm3") {
 			temp = "g_arg(";
 			temp += argsBinder;
-			
+
 		} else {
 
 			temp = "g_" + type + "(";
@@ -217,7 +217,7 @@ class Gene {
 				ArrayList<Gene> children = getChildren();
 				for (int i = 0; i < children.size(); i++) {
 					if (i > 0) temp += ",";
-					
+
 					temp += children.get(i).get();
 
 				}

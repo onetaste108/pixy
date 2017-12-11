@@ -219,6 +219,9 @@ class App {
 			goSingle = false;
 		}
 
+    separatorLimitMin = (float) 200/width;
+    separatorLimitMax = 1-(float) 360/width;;
+
 
 		cp5time.setGraphics(sketchRef,0,0);
 		cp5gen.setGraphics(sketchRef,0,0);
@@ -491,7 +494,7 @@ class App {
 	void checkArtsFocus() {
 		isFocused = false;
 		for (int i = 0; i < popSize; i++) {
-			if (mouseOver(gridPos[i].x, gridPos[i].y, gridScale.x, gridScale.y)) {
+			if (mouseOver(gridPos[i].x-gridMargin/2-1, gridPos[i].y-gridMargin/2-1, gridScale.x+gridMargin+2, gridScale.y+gridMargin+2)) {
 				isFocused = true;
 				focusedId = i;
 			}
@@ -780,7 +783,7 @@ class App {
 
 		sTimeFreq = cp5time.addSlider("timeFreq")
 		.plugTo(this)
-		.setRange(0.5,10)
+		.setRange(0.5,60)
 		.setValue(5)
 		.setLabelVisible(false)
 		.setColorActive(grayNormalOver)
@@ -996,6 +999,8 @@ class App {
 	void actionMainNew() {
 		randomPop();
 
+    lastSel = -1;
+
 		bMainEvolve
 			.setColorBackground(grayDark)
 			.setColorActive(grayDark) 
@@ -1011,6 +1016,7 @@ class App {
 		if (isAnySelected()) {
 			pop.evolve();
 		}
+    lastSel = -1;
 	}
 
 	void actionMainAgain() {
