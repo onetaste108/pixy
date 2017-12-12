@@ -34,3 +34,17 @@ of form generation and developing.
 Examples:
 
 ![alt text](https://github.com/onetaste108/pixy/raw/master/examples/ex1.jpg "example")
+
+![alt text](https://github.com/onetaste108/pixy/raw/master/examples/ex2.jpg "example")
+
+![alt text](https://github.com/onetaste108/pixy/raw/master/examples/ex3.jpg "example")
+
+![alt text](https://github.com/onetaste108/pixy/raw/master/examples/ex4.jpg "example")
+
+![alt text](https://github.com/onetaste108/pixy/raw/master/examples/ex5.jpg "example")
+
+![alt text](https://github.com/onetaste108/pixy/raw/master/examples/ex6.jpg "example")
+
+![alt text](https://github.com/onetaste108/pixy/raw/master/examples/ex7.jpg "example")
+
+Slava Rybin, onetaste108@gmail.com
