@@ -474,7 +474,7 @@ void main() {
 		iterY = y_;
 		for (int x_ = 0; x_ < u_aa; x_ ++) {
 			iterX = x_;
-vec3 col = g_div(g_if(g_add(g_y(),g_arg(0)),g_add(g_x(),g_y()),g_add(g_sub(g_arg(1),g_x()),g_y()),g_add(g_x(),g_clamp(g_x(),g_x(),g_x()))),g_mult(g_sub(g_arg(2),g_x()),g_sub(g_y(),g_y())));
+vec3 col = g_mult(g_sub(g_asin(g_arg(0)),g_abs(g_sub(g_sub(g_x(),g_mult(g_y(),g_arg(1))),g_arg(2)))),g_max(g_add(g_div(g_arg(3),g_div(g_sub(g_y(),g_add(g_mult(g_x(),g_div(g_y(),g_y())),g_x())),g_arg(4))),g_atan(g_y(),g_y())),g_or(g_mult(g_cos(g_arg(5)),g_xor(g_y(),g_y(),g_mod(g_y(),g_add(g_fract(g_x()),g_div(g_y(),g_arg(6)))),g_y(),g_add(g_acos(g_y()),g_y()),g_x())),g_mult(g_arg(7),g_sub(g_or(g_div(g_y(),g_x()),g_div(g_div(g_x(),g_arg(8)),g_div(g_x(),g_y())),g_arg(9),g_mix(g_x(),g_arg(10),g_sub(g_max(g_x(),g_arg(11)),g_x())),g_arg(12),g_mix(g_arg(13),g_add(g_y(),g_sub(g_add(g_xor(g_arg(14),g_arg(15),g_round(g_arg(16)),g_div(g_add(g_x(),g_arg(17)),g_arg(18)),g_arg(19),g_y()),g_arg(20)),g_arg(21))),g_x())),g_y())),g_div(g_y(),g_arg(22)),g_x(),g_min(g_arg(23),g_mult(g_y(),g_arg(24))),g_add(g_arg(25),g_x()))));
 			precol[iter] = col;
 
 			iter ++;

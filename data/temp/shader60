@@ -474,7 +474,7 @@ void main() {
 		iterY = y_;
 		for (int x_ = 0; x_ < u_aa; x_ ++) {
 			iterX = x_;
-vec3 col = g_and(g_mix(g_div(g_x(),g_y()),g_y(),g_sub(g_arg(0),g_x())),g_add(g_arg(1),g_fract(g_y())),g_round(g_x()),g_mult(g_mix(g_arg(2),g_div(g_cos(g_arg(3)),g_y()),g_mult(g_x(),g_arg(4))),g_x()),g_mix(g_x(),g_add(g_x(),g_sub(g_y(),g_xor(g_x(),g_x(),g_x(),g_x(),g_setS(g_x(),g_y()),g_x()))),g_y()),g_or(g_add(g_div(g_arg(5),g_sub(g_min(g_x(),g_x()),g_y())),g_sub(g_arg(6),g_y())),g_add(g_arg(7),g_x()),g_arg(8),g_x(),g_div(g_y(),g_cos(g_x())),g_add(g_min(g_y(),g_y()),g_or(g_arg(9),g_y(),g_sin(g_x()),g_mult(g_x(),g_x()),g_y(),g_add(g_x(),g_arg(10))))));
+vec3 col = g_cos(g_sub(g_div(g_x(),g_div(g_mix(g_mult(g_arg(0),g_arg(1)),g_arg(2),g_x()),g_div(g_arg(3),g_mult(g_sub(g_arg(4),g_y()),g_y())))),g_x()));
 			precol[iter] = col;
 
 			iter ++;

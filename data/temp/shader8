@@ -474,7 +474,7 @@ void main() {
 		iterY = y_;
 		for (int x_ = 0; x_ < u_aa; x_ ++) {
 			iterX = x_;
-vec3 col = g_sub(g_y(),g_div(g_arg(0),g_abs(g_sub(g_div(g_sub(g_round(g_mult(g_arg(1),g_y())),g_mod(g_arg(2),g_y())),g_arg(3)),g_sub(g_arg(4),g_sub(g_y(),g_mult(g_x(),g_x())))))));
+vec3 col = g_or(g_abs(g_add(g_add(g_arg(0),g_mult(g_div(g_arg(1),g_x()),g_sub(g_div(g_y(),g_round(g_arg(2))),g_y()))),g_add(g_atan(g_cos(g_y()),g_sub(g_sub(g_x(),g_mult(g_arg(3),g_x())),g_mix(g_y(),g_y(),g_y()))),g_floor(g_y())))),g_mod(g_mult(g_x(),g_arg(4)),g_div(g_xor(g_hsb2rgb(g_x()),g_x(),g_y(),g_cos(g_setH(g_div(g_setV(g_x(),g_x()),g_sub(g_x(),g_ceil(g_x()))),g_y())),g_arg(5),g_x()),g_sub(g_y(),g_abs(g_mult(g_x(),g_arg(6)))))),g_mult(g_and(g_clamp(g_x(),g_mix(g_add(g_min(g_arg(7),g_hsb2rgb(g_x())),g_max(g_arg(8),g_x())),g_arg(9),g_mix(g_x(),g_if(g_mult(g_add(g_x(),g_sin(g_arg(10))),g_arg(11)),g_y(),g_div(g_x(),g_arg(12)),g_y()),g_arg(13))),g_y()),g_div(g_add(g_x(),g_x()),g_x()),g_round(g_add(g_sub(g_x(),g_arg(14)),g_div(g_y(),g_mult(g_arg(15),g_arg(16))))),g_ceil(g_atan(g_div(g_y(),g_x()),g_x())),g_y(),g_sub(g_fract(g_div(g_sub(g_ceil(g_arg(17)),g_y()),g_arg(18))),g_mult(g_mult(g_x(),g_mult(g_y(),g_x())),g_arg(19)))),g_add(g_add(g_arg(20),g_mult(g_y(),g_x())),g_x())),g_div(g_sin(g_arg(21)),g_sub(g_arg(22),g_y())),g_atan(g_sub(g_arg(23),g_arg(24)),g_mult(g_x(),g_abs(g_arg(25)))),g_cos(g_add(g_add(g_arg(26),g_y()),g_div(g_div(g_add(g_arg(27),g_y()),g_arg(28)),g_sub(g_x(),g_and(g_x(),g_y(),g_if(g_arg(29),g_x(),g_x(),g_mult(g_y(),g_arg(30))),g_arg(31),g_x(),g_arg(32)))))));
 			precol[iter] = col;
 
 			iter ++;
