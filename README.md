@@ -23,6 +23,14 @@ and machine creativity, exploring possibilities
 of form generation and developing.
 
 [Download for Mac OS X](https://github.com/onetaste108/pixy/blob/master/Build/pixy.macosx.zip?raw=true)
+
 [Download for Windows 32-bit](https://github.com/onetaste108/pixy/blob/master/Build/pixy.windows32.zip?raw=true)
+
 [Download for Windows 64-bit](https://github.com/onetaste108/pixy/blob/master/Build/pixy.windows64.zip?raw=true)
+
 [Download for Linux 32-bit (Requires Java](https://github.com/onetaste108/pixy/blob/master/Build/pixy.linux32.zip?raw=true)
+
+
+Examples:
+
+![alt text](https://github.com/onetaste108/pixy/raw/master/examples/ex1.jpg "example")
