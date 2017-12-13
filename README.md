@@ -28,7 +28,6 @@ of form generation and developing.
 
 [Download for Windows 64-bit](https://github.com/onetaste108/pixy/blob/master/Build/pixy.windows64.zip?raw=true)
 
-[Download for Linux 32-bit (Requires Java](https://github.com/onetaste108/pixy/blob/master/Build/pixy.linux32.zip?raw=true)
 
 
 Examples:
